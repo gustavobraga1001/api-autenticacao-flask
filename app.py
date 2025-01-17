@@ -71,7 +71,7 @@ def update_user(id_user):
         user.password = data.get("password")
         db.session.commit()
 
-        return jsonify({"message": f"Usuário {id_user} atualizado com sucesso!"})
+        return jsonify({"message": f"Usuário {id_user} atualizado com sucesso!"}), 201
     
     return jsonify({"message": "Usuário não encontrado"}), 404
 
@@ -79,8 +79,13 @@ def update_user(id_user):
 @login_required
 def delete_user(id_user):
     user = User.query.get(id_user)
-    if user:
-        return jsonify({"username": f"Usuário {id_user} deletado com sucesso!"})
+    if id_user == current_user.id :
+        return jsonify({"message": f"Deleção não permitida"}), 403
+    
+    if user :
+        db.session.delete(user)
+        db.session.commit()
+        return jsonify({"message": f"Usuário {id_user} deletado com sucesso!"})
     
     return jsonify({"message": "Usuário não encontrado"}), 404
 
